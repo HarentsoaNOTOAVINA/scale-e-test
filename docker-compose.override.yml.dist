@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  app:
+    environment:
+      APP_ENV: development
+      APP_DEBUG: 'true'
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: scal_e_cdp
+      DB_USER: root
+      DB_PASS: root_password
+      API_KEY: scal-e-secret-key-2026-dev
+    volumes:
+      - .:/var/www/html
+
+  web:
+    ports:
+      - "8080:80"
+
+  db:
+    ports:
+      - "3306:3306"

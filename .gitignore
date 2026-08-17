@@ -1,0 +1,31 @@
+# Composer dependencies
+/vendor/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# PHPUnit & Testing cache
+/.phpunit.cache/
+.phpunit.result.cache
+
+# Logs & Temporary files
+*.log
+/scratch/
+
+docker-compose.override.yml
+
+Second_round_technical_test_Scal-e_1.txt
+scale-test.7z
