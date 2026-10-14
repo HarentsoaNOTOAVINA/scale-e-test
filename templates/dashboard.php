@@ -78,7 +78,7 @@
                     <form id="ingest-form">
                         <div class="form-group">
                             <label class="form-label">API Key (Optional X-API-Key)</label>
-                            <input type="text" id="ingest-api-key" class="form-input" value="scal-e-secret-key-2026">
+                            <input type="text" id="ingest-api-key" class="form-input" value="<?= htmlspecialchars($_ENV['API_KEY'] ?? getenv('API_KEY') ?: 'scal-e-secret-key-2026-dev', ENT_QUOTES) ?>">
                         </div>
                         <div class="grid-2">
                             <div class="form-group">
@@ -96,7 +96,10 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Properties (JSON Object)</label>
-                            <textarea id="ingest-props" rows="4" class="form-input">{\n  "amount": 120.50,\n  "product": "Shoes"\n}</textarea>
+                            <textarea id="ingest-props" rows="4" class="form-input">{
+  "amount": 120.50,
+  "product": "Shoes"
+}</textarea>
                         </div>
                         <button type="submit" class="btn btn-primary" style="width: 100%;">Send Event Payload</button>
                     </form>

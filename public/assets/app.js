@@ -123,11 +123,15 @@ function initIngestionForm() {
         resultBox.textContent = 'Processing ingestion...';
 
         let properties = {};
-        try {
-            properties = JSON.parse(document.getElementById('ingest-props').value || '{}');
-        } catch (err) {
-            resultBox.textContent = 'Invalid JSON in properties field!';
-            return;
+        const propsRaw = document.getElementById('ingest-props').value.trim();
+        if (propsRaw) {
+            try {
+                properties = JSON.parse(propsRaw);
+            } catch (err) {
+                console.error('Invalid JSON in properties:', err, propsRaw);
+                resultBox.textContent = `❌ Invalid JSON in properties field:\n${err.message}\n\nPlease ensure properties is a valid JSON object, e.g.:\n{\n  "amount": 120.50,\n  "product": "Shoes"\n}`;
+                return;
+            }
         }
 
         const payload = {
