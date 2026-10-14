@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\Database;
+use App\Core\Env;
+
+Env::load(__DIR__ . '/../.env');
 
 echo "=== Scal-e CDP Database Migration & Seeder ===" . PHP_EOL;
 

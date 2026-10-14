@@ -2,9 +2,13 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\Core\Env;
 use App\Core\Request;
 use App\Core\Response;
 use App\Core\Router;
+
+// Load environment variables if .env exists
+Env::load(__DIR__ . '/../.env');
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\SegmentController;

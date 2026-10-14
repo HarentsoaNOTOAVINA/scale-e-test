@@ -2,7 +2,10 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use App\Core\Env;
 use App\Infrastructure\Persistence\MySqlCustomerRepository;
+
+Env::load(__DIR__ . '/../.env');
 use App\Infrastructure\Persistence\MySqlEventRepository;
 use App\Services\IngestionService;
 

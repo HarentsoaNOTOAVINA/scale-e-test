@@ -57,49 +57,99 @@ The `SegmentationEngine` parses the AST, maps fields to indexed virtual columns 
 
 ## 🚦 Quick Start Guide
 
-### Option A: Running with Docker (Recommended)
+### 1. Environment Configuration
 
-1. Clone the repository and navigate to project root:
+The application uses an environment-based configuration loaded via a lightweight built-in `Env` parser (or via Docker Compose environment variables).
+
+1. Copy the sample environment file:
    ```bash
-   cd scale-test
+   cp .env.example .env
+   # On Windows PowerShell:
+   copy .env.example .env
    ```
 
-2. Start the services (Docker Compose will automatically combine `docker-compose.yml` and `docker-compose.override.yml` for local development):
-   ```bash
-   docker-compose up -d
-   ```
-
-3. Open your browser and access the Dashboard:
-   ```text
-   http://localhost:8080
-   ```
-
-> **Note on `docker-compose.override.yml`**: The file [`docker-compose.override.yml`](file:///e:/Projets/Test/scale-test/docker-compose.override.yml) is automatically loaded by Docker Compose to override settings for local development (e.g. enabling `APP_DEBUG=true`, binding local volume mounts, and setting dev API keys).
+2. Review `.env` and adjust if needed:
+   * **`DB_HOST`**: Set to `db` if running with Docker, or `127.0.0.1` if running locally on your host machine.
+   * **`DB_USER`** / **`DB_PASS`**: Database credentials (`root` / `root_password`).
+   * **`API_KEY`**: Development API key (defaults to `scal-e-secret-key-2026-dev`).
 
 ---
 
-### Option B: Running Locally with PHP CLI & MySQL
+### Option A: Running with Docker (Recommended)
 
-1. Ensure PHP 8.2+ and MySQL 8.0+ are running.
+#### 1. Launch the Application
+Start the containers in the background (Docker Compose automatically merges `docker-compose.yml` and `docker-compose.override.yml`):
+```bash
+docker-compose up -d
+```
+*Web server will be available at **`http://localhost:8080`**.*
 
-2. Install Composer dependencies & dump autoloader:
-   ```bash
-   composer install
-   ```
+#### 2. Run Database Migrations
+Create the database tables, schema indexes, and virtual generated columns:
+```bash
+docker exec scale_cdp_app php bin/migrate.php
+```
 
-3. Configure environment or edit `config/database.php` with your MySQL credentials.
+#### 3. Seed Demo Data
+Populate the database with initial demo customers and events:
+```bash
+docker exec scale_cdp_app php bin/seed.php
+```
+*(Alternatively, run migration and seed in one step: `docker exec scale_cdp_app php bin/migrate.php --seed`)*
 
-4. Run Database Migrations and Seed demo data:
-   ```bash
-   php bin/migrate.php --seed
-   ```
+#### 4. Access the App & Dashboard
+Open your browser at:
+```text
+http://localhost:8080
+```
 
-5. Start the local PHP development server:
-   ```bash
-   php -S localhost:8000 -t public
-   ```
+---
 
-6. Open your browser at `http://localhost:8000`.
+### Option B: Running Locally (PHP CLI & Local MySQL)
+
+#### 1. Prerequisites
+* **PHP 8.2+** with `pdo_mysql` and `json` extensions.
+* **MySQL 8.0+** running locally.
+* **Composer**.
+
+#### 2. Install Dependencies
+```bash
+composer install
+```
+
+#### 3. Configure Database
+Ensure `.env` points to your local MySQL instance:
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_NAME=scal_e_cdp
+DB_USER=root
+DB_PASS=root_password
+```
+
+#### 4. Run Migrations & Seed
+Execute the migration and seeder script:
+```bash
+# Run migration only:
+php bin/migrate.php
+
+# Seed sample customers and events:
+php bin/seed.php
+
+# Or run both simultaneously:
+php bin/migrate.php --seed
+```
+
+#### 5. Launch the PHP Built-in Server
+```bash
+php -S localhost:8000 -t public
+```
+
+#### 6. Access the App
+Open your browser at:
+```text
+http://localhost:8000
+```
 
 ---
 
@@ -107,7 +157,7 @@ The `SegmentationEngine` parses the AST, maps fields to indexed virtual columns 
 
 ### 1. Ingest Event
 - **Endpoint**: `POST /api/v1/events` (or `/api/events`)
-- **Headers**: `Content-Type: application/json`, `X-API-Key: scal-e-secret-key-2026`
+- **Headers**: `Content-Type: application/json`, `X-API-Key: scal-e-secret-key-2026-dev` (or value of `API_KEY` in `.env`)
 - **Request Body**:
 ```json
 {
@@ -126,6 +176,7 @@ The `SegmentationEngine` parses the AST, maps fields to indexed virtual columns 
 
 ### 2. Get Customer Profile
 - **Endpoint**: `GET /api/v1/customers/{id}` (or by email `GET /api/v1/customers/john.doe@example.com`)
+- **Headers**: `X-API-Key: scal-e-secret-key-2026-dev`
 - **Response**:
 ```json
 {
@@ -155,6 +206,7 @@ The `SegmentationEngine` parses the AST, maps fields to indexed virtual columns 
 
 ### 3. Run Segment Query
 - **Endpoint**: `POST /api/v1/segments/query`
+- **Headers**: `Content-Type: application/json`, `X-API-Key: scal-e-secret-key-2026-dev`
 - **Request Body**:
 ```json
 {
@@ -175,9 +227,16 @@ The `SegmentationEngine` parses the AST, maps fields to indexed virtual columns 
 ## 🧪 Unit Tests
 
 Run the PHPUnit test suite:
-```bash
-./vendor/bin/phpunit
-```
+
+* **Inside Docker**:
+  ```bash
+  docker exec scale_cdp_app vendor/bin/phpunit
+  ```
+
+* **Locally (with local PHP CLI)**:
+  ```bash
+  php vendor/bin/phpunit
+  ```
 
 ---
 
